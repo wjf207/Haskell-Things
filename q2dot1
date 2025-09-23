@@ -1,0 +1,22 @@
+prime :: Int -> Bool
+
+x_ :: Bool -> Int -> Int
+x_ True n  = n + 1
+x_ False n = n
+
+prime n
+  | n <= 1    = False
+  | otherwise = not (any (\x -> n `mod` x == 0) [2..n-1])
+
+x_warmup2 :: Int
+x_warmup2
+  = n5
+    where
+    n1 = x_ ( prime 13) 0
+    n2 = x_ ( prime 43) n1
+    n3 = x_ ( prime 199) n2
+    n4 = x_ ( prime 439) n3
+    n5 = x_ ( prime 691) n4
+    
+main :: IO ()
+main = print x_warmup2

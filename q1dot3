@@ -1,0 +1,52 @@
+import Data.List (nub)
+
+x_ :: Bool -> Int -> Int
+x_ b n = if b then n + 1 else n
+
+
+noRepeats :: Int -> Bool
+noRepeats n = 
+    let digits = show n 
+        unique = nub digits
+    in length digits == length unique
+
+hasZero :: Int -> Bool
+hasZero n =
+    let digits = show n
+    in '0' `elem` digits
+
+inOrder :: Int -> Bool
+inOrder n = 
+    let digits = show n
+        last3  = drop 3 digits
+        [a,b,c] = map (\ch -> read [ch] :: Int) last3
+    in a >= b && b >= c
+
+followsRule :: Int -> Bool
+followsRule n =
+    let digits = show n
+        [a,b,c,d,e,f] = map (\ch -> read [ch] :: Int) digits
+    in (a+b+c+d+e+f) == (5*(a+f))
+
+selector1 :: (Int,Int,Int,Int,Int,Int) -> Bool
+selector1 (a,b,c,d,e,f) =
+    let n = read (concatMap show [a,b,c,d,e,f]) :: Int
+    in noRepeats n &&
+      not (hasZero n) &&
+      inOrder n &&
+      followsRule n
+    
+x_selector1 :: Int
+x_selector1
+  = n5
+    where
+    n1 = x_ ((selector1(4,3,6,9,2,1))) 0
+    n2 = x_ (not(selector1(1,2,9,6,3,4))) n1
+    n3 = x_ (not(selector1(2,1,4,3,6,9))) n2
+    n4 = x_ (not(selector1(9,2,1,4,3,6))) n3
+    n5 = x_ (not(selector1(2,9,4,6,3,4))) n4
+
+
+main :: IO ()
+main = print x_selector1
+
