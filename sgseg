@@ -1,5 +1,3 @@
-
-
 opposite :: Int -> Int
 opposite 1 = 6
 opposite 2 = 5
@@ -19,5 +17,20 @@ adjacent 6 = [2, 3, 4, 5]
 validCheck :: Int -> Tup
 validCheck (L1, [F1,F2,F3],[B1,B2,B3],[U1,U2,U3],R3)
 
+
 main :: IO ()
 main = print ( opposite 4 )
+
+-- https://stackoverflow.com/questions/34422461/intuitively-how-does-haskell-find-the-length-of-a-list-without-using-a-standard
+listnumber :: [Int] -> Int 
+listnumber [] = 0
+listnumber (x:xs) =1 + listnumber xs
+
+
+
+validCheck :: Int -> Tup
+validCheck (L1, [F1,F2,F3],[B1,B2,B3],[U1,U2,U3],R3)
+F1 = opposite B3 && F2 = opposite B2 && F3 = opposite F1 
+  && listnumber([F1,U1,B3] `elem` adjacent(L1)) = 1 && listnumber([F3,U3,B1] `elem` adjacent(R3)) = 1
+  && listnumber([F1,L1,B3] `elem` adjacent(U1)) = 1 && listnumber([F2, B2] `elem` adjacent(U2)) = 2 && listnumber([F3,R3,B1] `elem` adjacent(U3)) = 1
+  
