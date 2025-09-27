@@ -1,0 +1,121 @@
+holds :: [Bool] -> Bool
+holds = and
+
+x_warmup3 :: Int
+x_warmup3
+  = n5
+    where
+    n1 = x_ ( holds []) 0
+    n2 = x_ ( holds [9 > 2 , 2 < 9 , 2 == 2]) n1
+    n3 = x_ ( holds [ last [1 ,2 ,3] == 3]) n2
+    n4 = x_ ( holds [ head [9 ,4 ,1] > 8 , 4+1 == 5]) n3
+    n5 = x_ ( holds [ init [8 ,3 ,1] == [8 ,3] , 8 > 3]) n4
+    
+opposite :: Int -> Int
+opposite 1 = 6
+opposite 2 = 5
+opposite 3 = 4
+opposite 4 = 3
+opposite 5 = 2
+opposite 6 = 1
+
+adjacentToLeft :: Int -> [[Int]]
+adjacentToLeft 1 = [[4,3,5],[5,2,3],[3,4,2],[2,5,4]]
+adjacentToLeft 2 = [[4,3,1],[1,6,3],[3,4,6],[6,1,4]]
+adjacentToLeft 3 = [[2,5,1],[1,6,5],[5,2,6],[6,1,2]]
+adjacentToLeft 4 = [[5,2,1],[1,6,2],[2,5,6],[6,1,5]]
+adjacentToLeft 5 = [[3,4,1],[1,6,4],[4,3,6],[6,1,3]]
+adjacentToLeft 6 = [[4,3,2],[2,5,3],[3,4,5],[5,2,4]]
+
+checkAdjacentToLeft :: Int -> [Int] -> Bool
+checkAdjacentToLeft face xs = xs `elem` adjacentToLeft face --uefhwegew
+
+adjacentToRight :: Int -> [[Int]]
+adjacentToRight 1 = [[3,4,5],[5,2,4],[4,3,2],[2,5,3]]
+adjacentToRight 2 = [[3,4,1],[1,6,4],[4,3,6],[6,1,3]]
+adjacentToRight 3 = [[5,2,1],[1,6,2],[2,5,6],[6,1,5]]
+adjacentToRight 4 = [[2,5,1],[1,6,5],[5,2,6],[6,1,2]]
+adjacentToRight 5 = [[4,3,1],[1,6,3],[3,4,6],[6,1,4]]
+adjacentToRight 6 = [[3,4,2],[2,5,4],[4,3,5],[5,2,3]]
+
+checkAdjacentToRight :: Int -> [Int] -> Bool
+checkAdjacentToRight face xs = xs `elem` adjacentToRight face --uefhwegew
+
+-- https:/0/stackoverflow.com/questions/34422461/intuitively-how-does-haskell-find-the-length-of-a-list-without-using-a-standard
+listnumber :: [Int] -> Int 
+listnumber [] = 0
+listnumber (x:xs) =1 + listnumber xs
+
+validCheck :: (Int, [Int], [Int], [Int], Int) -> Bool
+validCheck (l1, [f1,f2,f3],[b1,b2,b3],[u1,u2,u3],r3) =
+     f1 == opposite b1
+  && f2 == opposite b2
+  && f3 == opposite b3
+  && u1 /= f1
+  && u1 /= b1
+  && u1 /= l1
+  && u1 /= opposite l1
+  && u2 /= f2
+  && u2 /= b2
+  && u3 /= f3
+  && u3 /= b3
+  && u3 /=  r3
+  && u3 /=  opposite r3
+  && checkAdjacentToLeft (opposite l1) [f1,b1,u1] --changed to pass broken tests
+  && checkAdjacentToRight (opposite r3) [f3,b3,u3]
+
+generator3 :: [(Int, [Int], [Int], [Int], Int)]
+generator3 =
+  [ (l1, [f1,f2,f3], [b1,b2,b3], [u1,u2,u3], r3)
+  | l1 <- [1..6]
+  , f1 <- [1..6]
+  , f2 <- [1..6]
+  , f3 <- [1..6]
+  , b1 <- [1..6]
+  , b2 <- [1..6]
+  , b3 <- [1..6]
+  , u1 <- [1..6]
+  , u2 <- [1..6]
+  , u3 <- [1..6]
+  , r3 <- [1..6]
+  , validCheck (l1, [f1,f2,f3], [b1,b2,b3], [u1,u2,u3], r3)
+  ]
+ 
+prime :: Int -> Bool
+prime n
+  | n <= 1    = False
+  | otherwise = not (any (\x -> n `mod` x == 0) [2..n-1])
+
+selector3 :: (Int, [Int], [Int], [Int], Int) -> Bool
+selector3 (l1, [f1,f2,f3], [b1,b2,b3], [u1,u2,u3], r3) =
+     prime (l1 + f1 + f2 + f3 + b1 + b2 + b3 + u1 + u2 + u3 + r3)
+  && prime (f1 * 100 + f2 * 10 + f3)
+  && prime (b3 * 100 + b2 * 10 + b1)
+  && prime (u1 * 100 + u2 * 10 + u3)
+  -- Also check that u123 is the biggest?
+    
+
+x_generator3 :: Int
+x_generator3
+  = n5
+    where
+    n1 = x_ ((6 ,[4 ,1 ,2] ,[3 ,6 ,5] ,[5 ,4 ,4] ,1) `elem` generator3 ) 0
+    n2 = x_ ((6 ,[3 ,6 ,2] ,[4 ,1 ,5] ,[2 ,3 ,4] ,1) `elem` generator3 ) n1
+    n3 = x_ ((6 ,[5 ,5 ,5] ,[2 ,2 ,2] ,[3 ,3 ,4] ,6) `elem` generator3 ) n2
+    n4 = x_ ((2 ,[6 ,5 ,5] ,[1 ,2 ,2] ,[3 ,4 ,1] ,4) `elem` generator3 ) n3
+    n5 = x_ ((2 ,[6 ,6 ,1] ,[1 ,1 ,6] ,[3 ,5 ,4] ,5) `elem` generator3 ) n4
+    
+x_selector3 :: Int
+x_selector3
+    = n5
+        where
+        n1 = x_ ( selector3 (2 ,[4 ,4 ,3] ,[3 ,3 ,4] ,[6 ,6 ,1] ,5) ) 0
+        n2 = x_ (not ( selector3 (2 ,[6 ,6 ,1] ,[4 ,4 ,3] ,[3 ,4 ,4] ,5) ) ) n1
+        n3 = x_ (not ( selector3 (5 ,[3 ,3 ,4] ,[6 ,6 ,1] ,[4 ,4 ,3] ,2) ) ) n2
+        n4 = x_ (not ( selector3 (2 ,[6 ,6 ,1] ,[1 ,1 ,6] ,[3 ,5 ,4] ,5) ) ) n3
+        n5 = x_ (not ( selector3 (5 ,[1 ,1 ,2] ,[6 ,6 ,5] ,[3 ,2 ,4] ,1) ) ) n4
+
+x_ b n
+  = if b then n +1 else n
+main :: IO ()
+main = print (x_selector3)
