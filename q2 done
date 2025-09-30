@@ -1,0 +1,77 @@
+import Data.List (permutations)
+
+prime :: Int -> Bool
+prime n
+  | n <= 1    = False
+  | otherwise = not (any (\x -> n `mod` x == 0) [2..n-1])
+
+x_ :: Bool -> Int -> Int
+x_ True n  = n + 1
+x_ False n = n
+
+x_warmup2 :: Int
+x_warmup2
+  = n5
+    where
+    n1 = x_ ( prime 13) 0
+    n2 = x_ ( prime 43) n1
+    n3 = x_ ( prime 199) n2
+    n4 = x_ ( prime 439) n3
+    n5 = x_ ( prime 691) n4
+ 
+generator2 :: [[Int]]
+generator2 = filter isInOrder(concatMap permutations (combinations 4 [3,5,7,11,13,17,19,23,29,31,37,41]))
+
+isInOrder :: [Int] -> Bool
+isInOrder [a,b,c,d] = a < b && b < c && c < d
+
+combinations :: Int -> [a] -> [[a]] --debug
+combinations 0 _  = [[]]
+combinations _ [] = []
+combinations k (x:xs) = map (x:) (combinations (k-1) xs) ++ combinations k xs
+    
+x_generator2 :: Int
+x_generator2
+  = n5
+    where
+    n1 = x_ ([3 ,5 ,7 ,13] `elem` generator2 ) 0
+    n2 = x_ ([3 ,7 ,17 ,41] `elem` generator2 ) n1
+    n3 = x_ ([3 ,13 ,23 ,29] `elem` generator2 ) n2
+    n4 = x_ ([5 ,7 ,13 ,23] `elem` generator2 ) n3
+    n5 = x_ ([5 ,11 ,29 ,41] `elem` generator2 ) n4
+    
+canPlay :: Int -> [Int] -> Bool
+canPlay total remainingTiles =
+    all (\(a, b) -> prime (total + a + b)) pairs
+  where
+    pairs = [(x, y) | x <- remainingTiles, y <- remainingTiles, x < y]
+
+    
+selector2 :: [Int] -> Bool
+selector2 xs =
+    any checkOne (permutations xs)
+  where
+    checkOne [a,b,c,d] =
+        let remainingTiles = filter (`notElem` [a, b, c, d]) [3,5,7,11,13,17,19,23,29,31,37,41]
+        in
+            -- Uncomment these lines once canPlay is defined:
+            not (canPlay 3 remainingTiles) &&
+            not (canPlay (3 + a + b + c + d) remainingTiles) &&
+            prime (3 + a + b) &&
+            prime (3 + a + b + c + d)
+    checkOne _ = False
+
+
+x_selector2 :: Int
+x_selector2
+  = n5
+    where
+        n1 = x_ ([3 ,5 ,7 ,13] `elem` generator2 ) 0
+        n2 = x_ ([3 ,7 ,17 ,41] `elem` generator2 ) n1
+        n3 = x_ ([3 ,13 ,23 ,29] `elem` generator2 ) n2
+        n4 = x_ ([5 ,7 ,13 ,23] `elem` generator2 ) n3
+        n5 = x_ ([5 ,11 ,29 ,41] `elem` generator2 ) n4
+
+
+main :: IO ()
+main = print (x_selector2)
