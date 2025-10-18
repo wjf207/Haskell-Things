@@ -21,8 +21,8 @@ hasZero n =
 inOrder :: Int -> Bool
 inOrder n = 
     let digits = show n
-        last3  = drop 3 digits
-        [a,b,c] = map (\ch -> read [ch] :: Int) last3
+        last3  = drop 3 digits -- https://programming-idioms.org/cheatsheet/Haskell
+        [a,b,c] = map (\ch -> read [ch] :: Int) last3 -- re-worked general code from ChatGPT https://chatgpt.com/share/68f3d20c-e1f0-8002-a2c1-a9ee5fcfead1
     in a >= b && b >= c
 
 followsRule :: Int -> Bool
@@ -45,7 +45,7 @@ generator1 =
     d <- [1..9], 
     e <- [1..9], 
     f <- [1..9],
-    length (nub [a,b,c,d,e,f]) == 6 --ChatGPT showed me nub 07/10/25
+    length (nub [a,b,c,d,e,f]) == 6 --https://hackage.haskell.org/package/universum-0.7.1/docs/Nub.html
   ]
 
 selector1 :: (Int,Int,Int,Int,Int,Int) -> Bool
