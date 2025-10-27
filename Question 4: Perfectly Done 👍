@@ -1,0 +1,91 @@
+import Data.List (nub, sort, permutations, tails)
+
+coprime :: Integral a => a -> a -> Bool --http://www.zvon.org/other/haskell/Outputprelude/gcd_f.html 
+coprime x y = gcd x y == 1
+
+noCommonFactors :: [Int] -> Bool
+noCommonFactors [] = True
+noCommonFactors (x:xs) =
+  all (coprime x) xs && noCommonFactors xs
+
+generateList :: [Int]
+generateList =
+  [ squares
+  | n <- [2..99]
+  , let squares = n * n
+  , let digits = show squares
+  , nub digits == digits
+  ]
+  
+combinations :: Int -> [a] -> [[a]] -- re-worked GPT code https://chatgpt.com/s/t_68f4dca83d3c8191b8cb843d470b6a47
+combinations 0 _  = [[]]
+combinations _ [] = []
+combinations k (x:xs)
+  | k < 0     = []
+  | otherwise = withX ++ withoutX
+  where
+    withX    = map (x:) (combinations (k-1) xs)
+    withoutX = combinations k xs
+
+listPermutations :: [[Int]] -> [[Int]]
+listPermutations [] = []
+listPermutations (xs:xss) = concat[permutations xs, listPermutations xss]
+
+rootOutput :: [[Int]] -> [[Int]]
+rootOutput xss = map processList xss
+  where
+    processList xs = map processElement xs
+    processElement x = round (sqrt (fromIntegral x))
+    --https://stackoverflow.com/questions/6695267/get-sqrt-from-int-in-haskell
+    --https://stackoverflow.com/questions/21399943/haskell-convert-double-to-int
+
+usesAllDigitsExactly :: [Int] -> Bool
+usesAllDigitsExactly nums =
+  let s = concat (map show nums) --http://www.zvon.org/other/haskell/Outputprelude/concat_f.html
+  in  sort s == "0123456789"
+  
+generator4 :: [[Int]]
+generator4 =
+   -- For me, the code following is enough, but to pass the tests that require specific order, I will instead use the below code -- concat [rootOutput(filter usesAllDigitsExactly (combinations 3 generateList)), rootOutput(filter usesAllDigitsExactly (combinations 4 generateList))]
+    listPermutations (concat [rootOutput(filter usesAllDigitsExactly (combinations 3 generateList)), rootOutput(filter usesAllDigitsExactly (combinations 4 generateList))])
+
+selector4 :: [Int] -> Bool
+selector4 numbers =
+    all (\n -> n > 1 && n < 100) numbers &&  --https://programming-idioms.org/cheatsheet/Haskell
+    usesAllDigitsExactly (map (^2) numbers) && --https://stackoverflow.com/questions/40471203/square-of-list-in-haskell
+    noCommonFactors numbers 
+    
+x_warmup4 :: Int
+x_warmup4
+    = n5
+        where
+        n1 = x_ ( coprime 753 31) 0
+        n2 = x_ ( coprime 431 57) n1
+        n3 = x_ ( coprime 521 61) n2
+        n4 = x_ ( coprime 799 53) n3
+        n5 = x_ ( coprime 652 31) n4
+        
+x_generator4 :: Int
+x_generator4
+    = n5
+        where
+        n1 = x_ ([48 ,24 ,9 ,3] `elem` generator4 ) 0
+        n2 = x_ ([9 ,48 ,87] `elem` generator4 ) n1
+        n3 = x_ ([9 ,48 ,24 ,3] `elem` generator4 ) n2
+        n4 = x_ ([55 ,3 ,4 ,28] `elem` generator4 ) n3
+        n5 = x_ ([28 ,4 ,55 ,3] `elem` generator4 ) n4
+
+x_selector4 :: Int
+x_selector4
+    = n5
+        where
+        n1 = x_ ( selector4 [28 ,55 ,13]) 0
+        n2 = x_ ( selector4 [55 ,28 ,13]) n1
+        n3 = x_ ( selector4 [28 ,55 ,31]) n2
+        n4 = x_ ( selector4 [55 ,28 ,31]) n3
+        n5 = x_ ( selector4 [13 ,28 ,55]) n4
+
+x_ b n
+  = if b then n +1 else n
+main :: IO ()
+main = print ( head ( filter selector4 generator4 ))
